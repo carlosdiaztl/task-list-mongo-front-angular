@@ -1,0 +1,27 @@
+/* src/app/task-list/task-list.component.scss */
+.task-list-container {
+  padding: 20px;
+  margin: 20px;
+}
+
+.filters-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+  align-items: center;
+
+  mat-form-field {
+    min-width: 180px;
+    flex-grow: 1;
+  }
+}
+
+.full-width-table {
+  width: 100%;
+}
+
+mat-chip {
+  margin-right: 5px;
+  margin-bottom: 5px;
+}

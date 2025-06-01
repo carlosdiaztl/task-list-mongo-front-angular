@@ -1,9 +1,19 @@
+// src/app/app.component.ts
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet } from '@angular/router'; // Keep if you have routing
+import { MatToolbarModule } from '@angular/material/toolbar'; // Needed for mat-toolbar
+
+// <--- IMPORT TaskListComponent HERE --->
+import { TaskListComponent } from './task-list/task-list.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true, // This component is standalone
+  imports: [
+    RouterOutlet,       // Keep if you have routing configured
+    MatToolbarModule,   // Add MatToolbarModule for the toolbar
+    TaskListComponent   // <--- ADD TaskListComponent HERE
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

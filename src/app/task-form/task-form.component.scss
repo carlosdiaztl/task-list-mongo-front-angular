@@ -1,0 +1,15 @@
+/* src/app/task-form/task-form.component.scss */
+.task-form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  min-width: 300px; /* Adjust as needed */
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+mat-chip-grid {
+  margin-top: 10px;
+}
