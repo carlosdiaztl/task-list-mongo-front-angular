@@ -1,6 +1,6 @@
 // src/app/models/task.model.ts
 export interface Task {
-  id: string; // Using string for UUIDs or simple string IDs
+  _id: string; // Using string for UUIDs or simple string IDs
   title: string;
   status: TaskStatus; // Enforce specific values
   priority: TaskPriority; // Enforce specific values

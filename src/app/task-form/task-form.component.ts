@@ -1,4 +1,3 @@
-import { TaskService } from 'src/app/services/task.service';
 // src/app/task-form/task-form.component.ts
 import { Component, OnInit, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray, FormControl, ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -19,6 +18,7 @@ import { Observable, startWith, map } from 'rxjs'; // Importa Observable, startW
 import { Task } from '../models/task.model';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { CommonModule } from '@angular/common';
+import { TaskService } from '../services/task.service';
 
 
 @Component({
@@ -84,9 +84,9 @@ export class TaskFormComponent implements OnInit {
     });
 
     // Suscribirse a los tags únicos del servicio
-    this.taskService. getUniqueTags().subscribe(tags => {
-  this.allTags = tags;
-});
+//     this.taskService. getUniqueTags().subscribe(tags => {
+//   this.allTags = tags;
+// });
 
 
     // Configurar el autocompletado
@@ -145,7 +145,7 @@ export class TaskFormComponent implements OnInit {
     if (this.taskForm.valid) {
       const formValue = this.taskForm.value;
       const taskData: Task = {
-        id: this.currentTask?.id || '',
+        _id: this.currentTask?._id || '',
         title: formValue.title,
         dueDate: formValue.dueDate,
         status: formValue.status,
@@ -154,11 +154,22 @@ export class TaskFormComponent implements OnInit {
         history: this.currentTask?.history
       };
 
-      if (this.isEditMode && this.currentTask) {
-        this.taskService.updateTask({ ...this.currentTask, ...taskData });
-      } else {
-        this.taskService.addTask(taskData);
-      }
+     if (this.isEditMode && this.currentTask) {
+  this.taskService.updateTask({ ...this.currentTask, ...taskData }).subscribe({
+    next: () => this.dialogRef.close(true),
+    error: (err) => {
+      console.error('Error updating task:', err);
+      // Opcional: mostrar mensaje de error en UI
+    }
+  });
+} else {
+  this.taskService.createTask(taskData).subscribe({
+    next: () => this.dialogRef.close(true),
+    error: (err) => {
+      console.error('Error creating task:', err);
+    }
+  });
+}
       this.dialogRef.close(true);
     }
   }

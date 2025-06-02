@@ -1,3 +1,4 @@
+import { TaskService } from '../services/task.service';
 // src/app/task-list/task-list.component.ts
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common'; // <-- ¡IMPORTANTE! Para *ngIf, *ngFor, pipes como 'date'
@@ -22,7 +23,6 @@ import { MatDividerModule } from '@angular/material/divider'; // Para <mat-divid
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { TaskFormComponent } from '../task-form/task-form.component';
 import { TaskHistoryComponent } from '../task-history/task-history.component';
-import { TaskService } from '../services/task.service';
 
 
 @Component({
@@ -72,9 +72,10 @@ export class TaskListComponent implements OnInit, AfterViewInit {
   constructor(private taskService: TaskService, private dialog: MatDialog) {}
 
   ngOnInit(): void {
-    this.taskService.getTasks().subscribe(tasks => {
-      this.applyFilters(); // Apply filters initially
-    });
+  this.taskService.getTasks().subscribe((response: any) => {
+  this.allTasks = response.data; // ✅ solo el array
+  this.applyFilters(); // si necesitas aplicar filtros después
+});
   }
 
   ngAfterViewInit(): void {
@@ -146,7 +147,7 @@ export class TaskListComponent implements OnInit, AfterViewInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.taskService.deleteTask(task.id);
+        this.taskService.deleteTask(task._id);
       }
     });
   }
