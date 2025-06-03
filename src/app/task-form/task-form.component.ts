@@ -1,7 +1,19 @@
 // src/app/task-form/task-form.component.ts
 import { Component, OnInit, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormArray, FormControl, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormArray,
+  FormControl,
+  ReactiveFormsModule,
+  FormsModule,
+} from '@angular/forms';
+import {
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+} from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -12,14 +24,17 @@ import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 
 // Nuevas importaciones para autocompletado:
-import { MatAutocompleteSelectedEvent, MatAutocompleteModule } from '@angular/material/autocomplete';
+import {
+  MatAutocompleteSelectedEvent,
+  MatAutocompleteModule,
+} from '@angular/material/autocomplete';
 import { Observable, startWith, map } from 'rxjs'; // Importa Observable, startWith, map
 
 import { Task } from '../models/task.model';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { CommonModule } from '@angular/common';
 import { TaskService } from '../services/task.service';
-
+import { TaskListComponent } from '../task-list/task-list.component';
 
 @Component({
   selector: 'app-task-form',
@@ -38,10 +53,10 @@ import { TaskService } from '../services/task.service';
     MatSelectModule,
     MatChipsModule,
     MatIconModule,
-    MatAutocompleteModule // <-- ¡NUEVO! Para el autocompletado de tags
+    MatAutocompleteModule, // <-- ¡NUEVO! Para el autocompletado de tags
   ],
   templateUrl: './task-form.component.html',
-  styleUrls: ['./task-form.component.scss']
+  styleUrls: ['./task-form.component.scss'],
 })
 export class TaskFormComponent implements OnInit {
   taskForm!: FormGroup;
@@ -72,34 +87,37 @@ export class TaskFormComponent implements OnInit {
     this.taskForm = this.fb.group({
       title: [
         this.currentTask?.title || '',
-        [Validators.required, Validators.minLength(3)]
+        [Validators.required, Validators.minLength(3)],
       ],
       dueDate: [
         this.currentTask?.dueDate ? new Date(this.currentTask.dueDate) : null,
-        [this.dateNotInPastValidator]
+        [this.dateNotInPastValidator],
       ],
-      status: [this.currentTask?.status || 'To Do', Validators.required],
+      status: [this.currentTask?.status || 'Pending', Validators.required],
       priority: [this.currentTask?.priority || 'Medium', Validators.required],
-      tags: this.fb.array(this.currentTask?.tags || [])
+      tags: this.fb.array(this.currentTask?.tags || []),
     });
 
     // Suscribirse a los tags únicos del servicio
-//     this.taskService. getUniqueTags().subscribe(tags => {
-//   this.allTags = tags;
-// });
-
+    //     this.taskService. getUniqueTags().subscribe(tags => {
+    //   this.allTags = tags;
+    // });
 
     // Configurar el autocompletado
     this.filteredTags = this.tagInputControl.valueChanges.pipe(
       startWith(null),
-      map((tag: string | null) => (tag ? this._filterTags(tag) : this.allTags.slice()))
+      map((tag: string | null) =>
+        tag ? this._filterTags(tag) : this.allTags.slice()
+      )
     );
   }
 
-  dateNotInPastValidator(control: FormControl): { [key: string]: boolean } | null {
+  dateNotInPastValidator(
+    control: FormControl
+  ): { [key: string]: boolean } | null {
     const date = control.value;
     if (date && date < new Date(new Date().setHours(0, 0, 0, 0))) {
-      return { 'pastDate': true };
+      return { pastDate: true };
     }
     return null;
   }
@@ -123,7 +141,12 @@ export class TaskFormComponent implements OnInit {
   private addTagIfUnique(value: string): void {
     const lowerCaseValue = value.toLowerCase();
     // Agrega el tag solo si no existe ya en la lista de tags del formulario
-    if (value && !this.tags.value.some((tag: string) => tag.toLowerCase() === lowerCaseValue)) {
+    if (
+      value &&
+      !this.tags.value.some(
+        (tag: string) => tag.toLowerCase() === lowerCaseValue
+      )
+    ) {
       this.tags.push(this.fb.control(value));
     }
   }
@@ -135,9 +158,13 @@ export class TaskFormComponent implements OnInit {
   private _filterTags(value: string): string[] {
     const filterValue = value.toLowerCase();
     // Filtra los tags únicos que no están ya seleccionados en el formulario
-    return this.allTags.filter(tag =>
-      tag.toLowerCase().includes(filterValue) &&
-      !this.tags.value.some((selectedTag: string) => selectedTag.toLowerCase() === tag.toLowerCase())
+    return this.allTags.filter(
+      (tag) =>
+        tag.toLowerCase().includes(filterValue) &&
+        !this.tags.value.some(
+          (selectedTag: string) =>
+            selectedTag.toLowerCase() === tag.toLowerCase()
+        )
     );
   }
 
@@ -151,26 +178,26 @@ export class TaskFormComponent implements OnInit {
         status: formValue.status,
         priority: formValue.priority,
         tags: formValue.tags,
-        history: this.currentTask?.history
+        history: this.currentTask?.history,
       };
 
-     if (this.isEditMode && this.currentTask) {
-  this.taskService.updateTask({ ...this.currentTask, ...taskData }).subscribe({
-    next: () => this.dialogRef.close(true),
-    error: (err) => {
-      console.error('Error updating task:', err);
-      // Opcional: mostrar mensaje de error en UI
-    }
-  });
-} else {
-  this.taskService.createTask(taskData).subscribe({
-    next: () => this.dialogRef.close(true),
-    error: (err) => {
-      console.error('Error creating task:', err);
-    }
-  });
-}
-      this.dialogRef.close(true);
+      if (this.isEditMode && this.currentTask) {
+        this.taskService
+          .updateTask({ ...this.currentTask, ...taskData })
+          .subscribe({
+            next: () => this.dialogRef.close(true), // SOLO aquí
+            error: (err) => {
+              console.error('Error updating task:', err);
+            },
+          });
+      } else {
+        this.taskService.createTask(taskData).subscribe({
+          next: () => this.dialogRef.close(true), // SOLO aquí
+          error: (err) => {
+            console.error('Error creating task:', err);
+          },
+        });
+      }
     }
   }
 

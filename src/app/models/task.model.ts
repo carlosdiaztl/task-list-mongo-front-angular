@@ -20,5 +20,5 @@ export enum TaskPriority {
 }
 export interface TaskHistoryEntry {
   timestamp: Date;
-  change: string; // e.g., "Status changed from 'To Do' to 'In Progress'"
+  change: string; // e.g., "Status changed from 'Pending' to 'In Progress'"
 }

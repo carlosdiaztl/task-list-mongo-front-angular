@@ -13,3 +13,10 @@ mat-form-field {
 mat-chip-grid {
   margin-top: 10px;
 }
+mat-option {
+  background-color: white !important; /* Ensure options have a white background */
+  color: black !important; /* Ensure options have black text */
+  &:hover {
+    background-color: #f0f0f0 !important; /* Lighter background on hover */
+  }
+}

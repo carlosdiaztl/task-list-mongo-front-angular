@@ -6,9 +6,9 @@
       <mat-label>Filter by Status</mat-label>
       <mat-select [(ngModel)]="filterStatus" (selectionChange)="applyFilters()">
         <mat-option value="">All</mat-option>
-        <mat-option value="To Do">To Do</mat-option>
+        <mat-option value="Pending">Pending</mat-option>
         <mat-option value="In Progress">In Progress</mat-option>
-        <mat-option value="Done">Done</mat-option>
+        <mat-option value="Completed">Completed</mat-option>
       </mat-select>
     </mat-form-field>
 
@@ -76,6 +76,9 @@
         <button mat-icon-button color="warn" (click)="deleteTask(task)">
           <mat-icon>delete</mat-icon>
         </button>
+         <button mat-button color="accent" (click)="showHistory(task._id)">
+          <mat-icon>change_history</mat-icon>
+         </button>
       </td>
     </ng-container>
 

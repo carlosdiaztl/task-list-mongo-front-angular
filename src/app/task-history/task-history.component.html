@@ -1,1 +1,48 @@
-<p>task-history works!</p>
+<h2>Task History</h2>
+
+<div class="table-scroll-container" style="max-height: 80vh; overflow-y: auto;overflow-x: auto;">
+  <mat-table [dataSource]="history" class="mat-elevation-z8">
+
+    <ng-container matColumnDef="timestamp">
+      <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
+      <mat-cell *matCellDef="let entry"> {{ entry.timestamp | date:'short' }} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="changeType">
+      <mat-header-cell *matHeaderCellDef> Change Type </mat-header-cell>
+      <mat-cell *matCellDef="let entry"> {{ entry.changeType }} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="fieldChanged">
+      <mat-header-cell *matHeaderCellDef> Field </mat-header-cell>
+      <mat-cell *matCellDef="let entry"> {{ entry.fieldChanged || '-' }} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="oldValue">
+      <mat-header-cell *matHeaderCellDef> Old Value </mat-header-cell>
+      <mat-cell *matCellDef="let entry">
+        {{ formatValue(entry.oldValue) }}
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="newValue">
+      <mat-header-cell *matHeaderCellDef> New Value </mat-header-cell>
+      <mat-cell *matCellDef="let entry">
+        {{ formatValue(entry.newValue) }}
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="description">
+      <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
+      <mat-cell *matCellDef="let entry"> {{ entry.description }} </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+  </mat-table>
+</div>
+
+<ng-container *ngIf="!history || history.length === 0">
+  <p>No changes found for this task.</p>
+</ng-container>

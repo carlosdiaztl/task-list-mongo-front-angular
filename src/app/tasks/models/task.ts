@@ -14,7 +14,7 @@ export interface Task {
   id: string; // Un ID que puedes usar en el frontend antes de que MongoDB asigne _id
   title: string;
   description?: string; // Opcional, ya que no siempre lo especificaste en tus ejemplos anteriores
-  status: 'To Do' | 'In Progress' | 'Done'; // Usa uniones literales para estados específicos
+  status: 'Pending' | 'In Progress' | 'Completed'; // Usa uniones literales para estados específicos
   priority: 'Low' | 'Medium' | 'High';     // Usa uniones literales para prioridades específicas
   dueDate: Date; // Usamos Date porque la convertimos en el servicio
   tags: string[];

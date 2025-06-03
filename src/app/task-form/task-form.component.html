@@ -27,9 +27,9 @@
     <mat-form-field appearance="outline">
       <mat-label>Status</mat-label>
       <mat-select formControlName="status">
-        <mat-option value="To Do">To Do</mat-option>
+        <mat-option value="Pending">Pending</mat-option>
         <mat-option value="In Progress">In Progress</mat-option>
-        <mat-option value="Done">Done</mat-option>
+        <mat-option value="Completed">Completed</mat-option>
       </mat-select>
       <mat-error *ngIf="taskForm.get('status')?.hasError('required') && taskForm.get('status')?.touched">
         Status is required.

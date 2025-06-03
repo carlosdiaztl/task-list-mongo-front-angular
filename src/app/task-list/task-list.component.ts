@@ -24,38 +24,45 @@ import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation
 import { TaskFormComponent } from '../task-form/task-form.component';
 import { TaskHistoryComponent } from '../task-history/task-history.component';
 
-
 @Component({
   selector: 'app-task-list',
   standalone: true, // <-- ¡ESTO ES CLAVE! Declara el componente como independiente
-  imports: [ // <-- ¡Y ESTE ARRAY DE IMPORTS ES CLAVE!
+  imports: [
+    // <-- ¡Y ESTE ARRAY DE IMPORTS ES CLAVE!
     CommonModule, // Necesario para directivas estructurales (*ngIf, *ngFor) y pipes (como 'date')
-    FormsModule,  // Necesario para [(ngModel)] en los campos de filtro y búsqueda
+    FormsModule, // Necesario para [(ngModel)] en los campos de filtro y búsqueda
 
     // Módulos de Angular Material que usa este componente:
     MatTableModule,
     MatPaginatorModule, // Para <mat-paginator> y sus propiedades como 'pageSizeOptions'
-    MatSortModule,      // Para mat-sort-header
-    MatButtonModule,    // Para mat-button, mat-raised-button, mat-icon-button
-    MatIconModule,      // Para <mat-icon>
+    MatSortModule, // Para mat-sort-header
+    MatButtonModule, // Para mat-button, mat-raised-button, mat-icon-button
+    MatIconModule, // Para <mat-icon>
     MatFormFieldModule, // Para <mat-form-field>
-    MatInputModule,     // Para matInput
-    MatSelectModule,    // Para <mat-select>
-    MatChipsModule,     // Para <mat-chip-listbox>, <mat-chip>
-    MatDialogModule,    // Para MatDialog (para abrir diálogos)
-    MatDividerModule,   // Para <mat-divider>
+    MatInputModule, // Para matInput
+    MatSelectModule, // Para <mat-select>
+    MatChipsModule, // Para <mat-chip-listbox>, <mat-chip>
+    MatDialogModule, // Para MatDialog (para abrir diálogos)
+    MatDividerModule, // Para <mat-divider>
 
     // Los componentes que se abren como diálogos también deben estar en los imports
     // si son standalone y se usan en el template, o si se abren vía MatDialog.open()
     ConfirmationDialogComponent,
     TaskFormComponent,
-    TaskHistoryComponent
+    TaskHistoryComponent,
   ],
   templateUrl: './task-list.component.html',
-  styleUrls: ['./task-list.component.scss']
+  styleUrls: ['./task-list.component.scss'],
 })
 export class TaskListComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['title', 'status', 'priority', 'dueDate', 'tags', 'actions'];
+  displayedColumns: string[] = [
+    'title',
+    'status',
+    'priority',
+    'dueDate',
+    'tags',
+    'actions',
+  ];
   dataSource = new MatTableDataSource<Task>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -71,12 +78,18 @@ export class TaskListComponent implements OnInit, AfterViewInit {
 
   constructor(private taskService: TaskService, private dialog: MatDialog) {}
 
-  ngOnInit(): void {
-  this.taskService.getTasks().subscribe((response: any) => {
-  this.allTasks = response.data; // ✅ solo el array
-  this.applyFilters(); // si necesitas aplicar filtros después
-});
-  }
+ngOnInit(): void {
+  this.loadAndApplyTasks();
+}
+loadAndApplyTasks(): void {
+  this.taskService.getTasks().subscribe({
+    next: (response: any) => {
+      this.allTasks = response.data;
+      this.applyFilters();
+    },
+    error: (err) => console.error('Failed to load tasks:', err),
+  });
+}
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
@@ -85,8 +98,10 @@ export class TaskListComponent implements OnInit, AfterViewInit {
     // Custom sorting for date and tags if needed (e.g., date as string)
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch (property) {
-        case 'dueDate': return item.dueDate.getTime(); // Sort by timestamp
-        default: return (item as any)[property];
+        case 'dueDate':
+          return item.dueDate.getTime(); // Sort by timestamp
+        default:
+          return (item as any)[property];
       }
     };
   }
@@ -96,34 +111,42 @@ export class TaskListComponent implements OnInit, AfterViewInit {
 
     // Filter by Status
     if (this.filterStatus) {
-      filteredTasks = filteredTasks.filter(task => task.status === this.filterStatus);
+      filteredTasks = filteredTasks.filter(
+        (task) => task.status === this.filterStatus
+      );
     }
 
     // Filter by Priority
     if (this.filterPriority) {
-      filteredTasks = filteredTasks.filter(task => task.priority === this.filterPriority);
+      filteredTasks = filteredTasks.filter(
+        (task) => task.priority === this.filterPriority
+      );
     }
 
     // Filter by Tags
     if (this.filterTags) {
-      const tagsToFilter = this.filterTags.toLowerCase().split(',').map(tag => tag.trim()).filter(tag => tag);
-      filteredTasks = filteredTasks.filter(task =>
-        tagsToFilter.every(filterTag =>
-          task.tags.some(taskTag => taskTag.toLowerCase().includes(filterTag))
+      const tagsToFilter = this.filterTags
+        .toLowerCase()
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter((tag) => tag);
+      filteredTasks = filteredTasks.filter((task) =>
+        tagsToFilter.every((filterTag) =>
+          task.tags.some((taskTag) => taskTag.toLowerCase().includes(filterTag))
         )
       );
     }
 
     // Search by Title
     if (this.searchTitle) {
-      filteredTasks = filteredTasks.filter(task =>
+      filteredTasks = filteredTasks.filter((task) =>
         task.title.toLowerCase().includes(this.searchTitle.toLowerCase())
       );
     }
 
     this.dataSource.data = filteredTasks;
     if (this.dataSource.paginator) {
-        this.dataSource.paginator.firstPage(); // Reset pagination
+      this.dataSource.paginator.firstPage(); // Reset pagination
     }
   }
 
@@ -142,35 +165,44 @@ export class TaskListComponent implements OnInit, AfterViewInit {
   deleteTask(task: Task): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       width: '300px',
-      data: { message: `Are you sure you want to delete "${task.title}"?` }
+      data: { message: `Are you sure you want to delete "${task.title}"?` },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.taskService.deleteTask(task._id);
+        this.taskService.deleteTask(task._id).subscribe({
+          next: () => {
+            console.log('Task deleted successfully');
+        this.loadAndApplyTasks();
+          },
+          error: (err) => {
+            console.error('Error deleting task:', err);
+          },
+        });
       }
     });
   }
-
+ 
   openTaskForm(task?: Task): void {
     const dialogRef = this.dialog.open(TaskFormComponent, {
       width: '500px', // Ajusta el ancho según necesites
-      data: { task: task } // Pasa la tarea si es modo edición, undefined para nueva tarea
+      data: { task: task }, // Pasa la tarea si es modo edición, undefined para nueva tarea
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         // La tarea fue añadida/actualizada, el BehaviorSubject en TaskService
         // ya se encarga de que la tabla se actualice automáticamente.
+        this.loadAndApplyTasks();
         console.log('Task form closed, changes saved.');
       }
     });
   }
 
-  showHistory(task: Task): void {
+  showHistory(task: Task['_id']): void {
     this.dialog.open(TaskHistoryComponent, {
       width: '500px',
-      data: { task: task }
+      data: { task_id: task }, // Pasa el ID de la tarea para cargar su historial
     });
   }
 
