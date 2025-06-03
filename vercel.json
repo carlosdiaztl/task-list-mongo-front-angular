@@ -5,7 +5,7 @@
       "src": "angular.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist/task_manager/browser"
+        "distDir": "dist/task-manager/browser"
       }
     }
   ],
