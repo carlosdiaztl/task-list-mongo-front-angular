@@ -1,3 +1,4 @@
+import { environment } from './../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -7,7 +8,7 @@ import { Task } from '../models/task.model'; // Asegúrate de que el modelo exis
   providedIn: 'root'
 })
 export class TaskService {
-  private readonly apiUrl = 'http://localhost:8080/api/v1/task'; // cambia a tu URL
+  private readonly apiUrl = environment.apiUrl+'/task'; // cambia a tu URL
 
   constructor(private http: HttpClient) {}
 
